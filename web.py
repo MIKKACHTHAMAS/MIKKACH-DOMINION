@@ -77,6 +77,10 @@ def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
+
+        if password != confirm_password:
+            return "Passwords do not match", 400
 
         hashed = bcrypt.generate_password_hash(password).decode("utf-8")
 
@@ -90,7 +94,7 @@ def register():
             conn.commit()
         except psycopg2.errors.UniqueViolation:
             conn.rollback()
-            return "Username already exists"
+            return "Username already exists", 400
         finally:
             cur.close()
             conn.close()
